@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import _ from 'lodash';
 import * as adminActions from '../actions/adminActions';
-import web3manager from '../utils/web3manager';
 
 export default class StoreOwners extends Component {
   constructor(props, context) {
@@ -18,20 +17,8 @@ export default class StoreOwners extends Component {
   }
 
   componentWillMount() {
-    const { dispatch } = this.props;
-
-    web3manager.onlineMarketInstance()
-      .then((info) => {
-        const newState = {
-          instance: info.instance,
-          account: info.account,
-        };
-        this.setState(newState);
-      })
-      .then(() => {
-        const { instance, account } = this.state;
-        dispatch(adminActions.fetchAll(instance, account));
-      });
+    const { dispatch, instance, account } = this.props;
+    dispatch(adminActions.fetchAll(instance, account));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -43,8 +30,8 @@ export default class StoreOwners extends Component {
   }
 
   onAdd() {
-    const { instance, account, newStoreOwner } = this.state;
-    const { dispatch } = this.props;
+    const { newStoreOwner } = this.state;
+    const { instance, account, dispatch } = this.props;
 
     dispatch(adminActions.create(instance, account, newStoreOwner));
   }
@@ -96,6 +83,8 @@ export default class StoreOwners extends Component {
 StoreOwners.propTypes = {
   dispatch: PropTypes.func.isRequired,
   storeOwners: PropTypes.array,
+  instance: PropTypes.object.isRequired,
+  account: PropTypes.string.isRequired,
 };
 
 StoreOwners.defaultProps = {
