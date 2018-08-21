@@ -5,8 +5,6 @@ export const ADD_STORE_OWNER_FAILURE = 'ADD_STORE_OWNER_FAILURE';
 export function create(api, account, storeOwner) {
   return (dispatch) => {
     dispatch({ type: ADD_STORE_OWNER_REQUEST });
-    dispatch({ type: ADD_STORE_OWNER_SUCCESS, storeOwner });
-    /*
     return api.addStoreOwner(storeOwner, { from: account })
       .then(() => {
         dispatch({ type: ADD_STORE_OWNER_SUCCESS, storeOwner });
@@ -15,7 +13,6 @@ export function create(api, account, storeOwner) {
         console.log('failed to add a store owner', e);
         dispatch({ type: ADD_STORE_OWNER_FAILURE, msg: e });
       });
-  */
   };
 }
 
