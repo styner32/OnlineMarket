@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import StoreOwners from '../components/StoreOwners';
+import EditStore from '../components/EditStore';
 import { login } from '../actions/userActions';
 import { initWeb3 } from '../actions/web3Actions';
 
@@ -14,8 +15,6 @@ class HomePage extends Component {
   componentWillReceiveProps(nextProps) {
     const { dispatch } = this.props;
 
-    console.log(nextProps.instance);
-    console.log(nextProps.account);
     if (nextProps.instance && nextProps.account) {
       dispatch(login(nextProps.instance, nextProps.account));
     }
@@ -24,8 +23,6 @@ class HomePage extends Component {
   render() {
     const { role } = this.props;
 
-    console.log('role', role);
-
     return (
       <div className="jumbotron">
         <Header />
@@ -33,12 +30,7 @@ class HomePage extends Component {
           Online Market
         </h1>
         { role === 'Admin' ? (<StoreOwners {...this.props} />) : '' }
-        { role === 'StoreOwner'
-          ? (
-            <div>
-              Add Items
-            </div>
-          ) : '' }
+        { role === 'StoreOwner' ? (<EditStore {...this.props} />) : '' }
         { role === 'Shopper'
           ? (
             <div>
