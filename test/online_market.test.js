@@ -81,9 +81,22 @@ contract('OnlineMarket', (accounts) => {
     })
 
     it("returns a role", async () => {
-      expect(await onlineMarket.getRole(alice)).to.equal('Admin')
-      expect(await onlineMarket.getRole(bob)).to.equal('StoreOwner')
-      expect(await onlineMarket.getRole(user1)).to.equal('Shopper')
+      expect(await onlineMarket.getRole({from: alice})).to.equal('Admin')
+      expect(await onlineMarket.getRole({from :bob})).to.equal('StoreOwner')
+      expect(await onlineMarket.getRole({from: user1})).to.equal('Shopper')
+    })
+  })
+
+  describe('setStoreTitle', () => {
+    beforeEach( async () => {
+      await onlineMarket.addAdmin(alice)
+      await onlineMarket.addStoreOwner(bob, {from: alice})
+    })
+
+    it("updates the store title", async () => {
+      expect(await onlineMarket.getStoreTitle({from: bob})).to.equal('')
+      await onlineMarket.setStoreTitle('awesome store', {from: bob})
+      expect(await onlineMarket.getStoreTitle({from: bob})).to.equal('awesome store')
     })
   })
 })
