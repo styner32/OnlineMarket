@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
-import items from './itemReducer';
+import stores from './storeReducer';
 import storeOwners from './storeOwnerReducer';
 import user from './userReducer';
 import web3 from './web3Reducer';
 
 const rootReducer = combineReducers({
-  items,
+  stores,
   storeOwners,
   user,
   web3,

@@ -48,6 +48,7 @@ function mapStateToProps(state) {
     role: state.user.role,
     instance: state.web3.instance,
     account: state.web3.account,
+    title: state.stores.title,
   };
 }
 
