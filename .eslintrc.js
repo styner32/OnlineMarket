@@ -5,6 +5,7 @@ module.exports = {
     "import"
   ],
   "rules": {
+    "jsx-a11y/label-has-for": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/jsx-boolean-value": 0,
     "react/prefer-stateless-function": 0,
