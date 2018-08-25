@@ -5,7 +5,7 @@ export const UPDATE_STORE_FAILURE = 'UPDATE_STORE_FAILURE';
 export function updateStore(api, account, title) {
   return (dispatch) => {
     dispatch({ type: UPDATE_STORE_REQUEST });
-    return api.setStoreTitle(account, title, { from: account })
+    return api.setStoreTitle(title, { from: account })
       .then(() => {
         dispatch({ type: UPDATE_STORE_SUCCESS, title });
       })
