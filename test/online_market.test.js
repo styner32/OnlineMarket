@@ -94,9 +94,58 @@ contract('OnlineMarket', (accounts) => {
     })
 
     it("updates the store title", async () => {
-      expect(await onlineMarket.getStoreTitle({from: bob})).to.equal('')
+      let result = await onlineMarket.getStoreTitle({from: bob})
+      expect(result[0]).to.equal('')
+      expect(result[1].toString(10)).to.equal('0')
+
       await onlineMarket.setStoreTitle('awesome store', {from: bob})
-      expect(await onlineMarket.getStoreTitle({from: bob})).to.equal('awesome store')
+      result = await onlineMarket.getStoreTitle({from: bob})
+      expect(result[0]).to.equal('awesome store')
+      expect(result[1].toString(10)).to.equal('0')
+    })
+
+    it('does not add when a user is not a store owner', async () => {
+      try {
+        await onlineMarket.setStoreTitle('awesome store', {from: alice})
+
+        assert.equal(false, true, 'it was expected to be reverted')
+      } catch (e) {
+        expect(true).to.equal(true)
+      }
+    })
+  })
+
+  describe('addItem', () => {
+    beforeEach( async () => {
+      await onlineMarket.addAdmin(alice)
+      await onlineMarket.addStoreOwner(bob, {from: alice})
+    })
+
+    it("adds a new item", async () => {
+      let itemId
+      let storeOwner
+      let eventEmitted = false
+
+      const event = onlineMarket.ItemCreated()
+      await event.watch((err, res) => {
+        storeOwner = res.args.storeOwner
+        itemId = res.args.id.toString(10)
+        eventEmitted = true
+      })
+
+      await onlineMarket.addItem('good shoes', 1, {from: bob})
+
+      expect(eventEmitted).to.equal(true)
+      expect(storeOwner).to.equal(bob)
+
+      const item = await onlineMarket.fetchItem.call(itemId, {from: bob})
+      expect(item[0].toString(10)).to.equal(itemId)
+      expect(item[1]).to.equal('good shoes')
+      expect(item[2].toString(10)).to.equal('1')
+
+      const result = await onlineMarket.getStoreTitle({from: bob})
+      expect(result[0]).to.equal('')
+      expect(result[1].toString(10)).to.equal('1')
     })
   })
 })

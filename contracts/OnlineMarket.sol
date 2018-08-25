@@ -14,13 +14,18 @@ contract OnlineMarket {
     modifier shouldBeStoreOwner () { require (storeOwnerMapping[msg.sender]); _;}
 
     struct Item {
+        uint id;
         string name;
+        uint price;
     }
 
     struct Store {
         string title;
+        uint itemCount;
         mapping (uint => Item) items;
     }
+
+    event ItemCreated(address storeOwner, uint id);
 
     constructor() public {
         owner = msg.sender;
@@ -43,7 +48,7 @@ contract OnlineMarket {
         if (storeOwnerMapping[addr] != true) {
             storeOwnerMapping[addr] = true;
             storeOwners.push(addr);
-            stores[addr] = Store({title: ''});
+            stores[addr] = Store({title: '', itemCount: 0});
         }
     }
 
@@ -69,7 +74,23 @@ contract OnlineMarket {
         stores[msg.sender].title = title;
     }
 
-    function getStoreTitle() public view returns (string) {
-        return stores[msg.sender].title;
+    function getStoreTitle() public view returns (string, uint) {
+        return (stores[msg.sender].title, stores[msg.sender].itemCount);
+    }
+
+    function addItem(string name, uint price) public shouldBeStoreOwner {
+        emit ItemCreated(msg.sender, stores[msg.sender].itemCount);
+        stores[msg.sender].items[stores[msg.sender].itemCount] = Item({
+            id: stores[msg.sender].itemCount,
+            name: name,
+            price: price
+        });
+        stores[msg.sender].itemCount++;
+    }
+
+    function fetchItem(uint id) public shouldBeStoreOwner view returns(uint, string, uint) {
+        return (stores[msg.sender].items[id].id,
+                stores[msg.sender].items[id].name,
+                stores[msg.sender].items[id].price);
     }
 }
