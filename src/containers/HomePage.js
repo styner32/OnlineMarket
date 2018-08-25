@@ -49,6 +49,8 @@ function mapStateToProps(state) {
     instance: state.web3.instance,
     account: state.web3.account,
     title: state.stores.title,
+    items: state.stores.items,
+    itemCount: state.stores.itemCount,
   };
 }
 
