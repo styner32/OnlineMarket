@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import _ from 'lodash';
-import * as adminActions from '../actions/adminActions';
+import * as storeOwnerActions from '../actions/storeOwnerActions';
 
 export default class StoreOwners extends Component {
   constructor(props, context) {
@@ -18,7 +18,7 @@ export default class StoreOwners extends Component {
 
   componentWillMount() {
     const { dispatch, instance, account } = this.props;
-    dispatch(adminActions.fetchAll(instance, account));
+    dispatch(storeOwnerActions.fetchAll(instance, account));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -33,7 +33,7 @@ export default class StoreOwners extends Component {
     const { newStoreOwner } = this.state;
     const { instance, account, dispatch } = this.props;
 
-    dispatch(adminActions.create(instance, account, newStoreOwner));
+    dispatch(storeOwnerActions.create(instance, account, newStoreOwner));
   }
 
   onChangeNewStoreOwner(e) {

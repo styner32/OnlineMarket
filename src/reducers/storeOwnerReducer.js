@@ -1,11 +1,10 @@
 import {
   ADD_STORE_OWNER_SUCCESS,
   FETCH_STORE_OWNERS_SUCCESS,
-} from '../actions/adminActions';
+} from '../actions/storeOwnerActions';
 
 const initialState = {
   storeOwners: [],
-  role: '',
 };
 
 export default function storeOwnerReducer(state = initialState, action) {
