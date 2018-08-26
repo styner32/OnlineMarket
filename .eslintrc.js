@@ -21,6 +21,7 @@ module.exports = {
     "contract": true,
     "artifacts": true,
     "document": true,
-    "window": true
+    "window": true,
+    "web3": true
   }
 };
