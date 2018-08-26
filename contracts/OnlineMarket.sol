@@ -13,10 +13,14 @@ contract OnlineMarket {
     modifier shouldBeAdmin () { require (adminMapping[msg.sender]); _; }
     modifier shouldBeStoreOwner () { require (storeOwnerMapping[msg.sender]); _;}
 
+    enum State { ForSale, Sold }
+
     struct Item {
         uint id;
         string name;
         uint price;
+        State state;
+        address buyer;
     }
 
     struct Store {
@@ -26,6 +30,7 @@ contract OnlineMarket {
     }
 
     event ItemCreated(address storeOwner, uint id);
+    event ItemPurchased(address buyer, address storeOwner, uint id);
 
     constructor() public {
         owner = msg.sender;
@@ -83,14 +88,34 @@ contract OnlineMarket {
         stores[msg.sender].items[stores[msg.sender].itemCount] = Item({
             id: stores[msg.sender].itemCount,
             name: name,
-            price: price
+            price: price,
+            state: State.ForSale,
+            buyer: 0
         });
         stores[msg.sender].itemCount++;
     }
 
-    function fetchItem(address addr, uint id) public view returns(uint, string, uint) {
-        return (stores[addr].items[id].id,
-                stores[addr].items[id].name,
-                stores[addr].items[id].price);
+    function fetchItem(address storeOwner, uint itemId) public view
+    returns(uint, string, uint, string) {
+        string memory state = 'ForSale';
+        if (stores[storeOwner].items[itemId].buyer != 0) {
+            if (stores[storeOwner].items[itemId].buyer == msg.sender) {
+                state = 'SoldByMe';
+            } else {
+                state = 'Sold';
+            }
+        }
+
+        return (stores[storeOwner].items[itemId].id,
+                stores[storeOwner].items[itemId].name,
+                stores[storeOwner].items[itemId].price,
+                state);
+    }
+
+    function buyItem(address storeOwner, uint itemId) public payable {
+        emit ItemPurchased(msg.sender, storeOwner, itemId);
+        stores[storeOwner].items[itemId].state = State.Sold;
+        stores[storeOwner].items[itemId].buyer = msg.sender;
+        storeOwner.transfer(stores[storeOwner].items[itemId].price);
     }
 }

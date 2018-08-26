@@ -48,7 +48,7 @@ export const ADD_ITEM_FAILURE = 'ADD_ITEM_FAILURE';
 export function addItem(api, account, name, price) {
   return (dispatch) => {
     dispatch({ type: ADD_ITEM_REQUEST });
-    return api.addItem(name, price, { from: account })
+    return api.addItem(name, web3.utils.toWei(price, 'ether'), { from: account })
       .then((item) => {
         dispatch({ type: ADD_ITEM_SUCCESS, item });
       })
@@ -68,12 +68,11 @@ export function fetchItems(api, account, itemCount) {
     dispatch({ type: FETCH_ITEMS_REQUEST });
     const promises = [];
     for (let i = 0; i < itemCount; i += 1) {
-      promises.push(api.fetchItem(account, i));
+      promises.push(api.fetchItem(account, i, { from: account }));
     }
 
     return Promise.all(promises)
       .then((items) => {
-        console.log('fetched items', items);
         dispatch({ type: FETCH_ITEMS_SUCCESS, items });
       })
       .catch((e) => {
@@ -115,7 +114,7 @@ export const FETCH_STORE_ITEMS_REQUEST = 'FETCH_STORE_ITEMS_REQUEST';
 export const FETCH_STORE_ITEMS_SUCCESS = 'FETCH_STORE_ITEMS_SUCCESS';
 export const FETCH_STORE_ITEMS_FAILURE = 'FETCH_STORE_ITEMS_FAILURE';
 
-export function fetchStoreItems(api, stores) {
+export function fetchStoreItems(api, account, stores) {
   return (dispatch) => {
     dispatch({ type: FETCH_STORE_ITEMS_REQUEST });
     const storeItems = {};
@@ -124,16 +123,18 @@ export function fetchStoreItems(api, stores) {
     for (let i = 0; i < stores.length; i += 1) {
       const promisesForItems = [];
       for (let j = 0; j < stores[i].itemCount; j += 1) {
-        promisesForItems.push(api.fetchItem(stores[i].id, j));
+        promisesForItems.push(api.fetchItem(stores[i].id, j, { from: account }));
       }
 
       const promise = Promise.all(promisesForItems)
         .then((items) => {
           for (let j = 0; j < items.length; j += 1) {
+            console.log('item', items[j]);
             const storeItem = {
               id: items[j][0].toNumber(),
               name: items[j][1],
-              price: items[j][2].toNumber(),
+              price: items[j][2],
+              state: items[j][3],
             };
             storeItems[stores[i].id] = (storeItems[stores[i].id] || []).concat([storeItem]);
           }
@@ -149,6 +150,24 @@ export function fetchStoreItems(api, stores) {
       .catch((e) => {
         console.log('failed to fetch store items', e);
         dispatch({ type: FETCH_STORE_ITEMS_FAILURE, msg: e });
+      });
+  };
+}
+
+export const BUY_ITEM_REQUEST = 'BUY_ITEM_REQUEST';
+export const BUY_ITEM_SUCCESS = 'BUY_ITEM_SUCCESS';
+export const BUY_ITEM_FAILURE = 'BUY_ITEM_FAILURE';
+
+export function buyItem(api, account, store, item) {
+  return (dispatch) => {
+    dispatch({ type: BUY_ITEM_REQUEST });
+    return api.buyItem(store.id, item.id, { from: account, value: item.price })
+      .then(() => {
+        dispatch({ type: BUY_ITEM_SUCCESS });
+      })
+      .catch((e) => {
+        console.log('failed to buy an item', e);
+        dispatch({ type: BUY_ITEM_FAILURE, msg: e });
       });
   };
 }

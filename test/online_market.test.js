@@ -4,7 +4,6 @@ contract('OnlineMarket', (accounts) => {
   const owner = accounts[0]
   const alice = accounts[1]
   const bob = accounts[2]
-  const user1 = '0x1234567890123456789012345678901234567890'
 
   let onlineMarket;
 
@@ -75,6 +74,8 @@ contract('OnlineMarket', (accounts) => {
   })
 
   describe('getRole', () => {
+    const shopper = '0x1234567890123456789012345678901234567890'
+
     beforeEach( async () => {
       await onlineMarket.addAdmin(alice)
       await onlineMarket.addStoreOwner(bob, {from: alice})
@@ -82,8 +83,8 @@ contract('OnlineMarket', (accounts) => {
 
     it("returns a role", async () => {
       expect(await onlineMarket.getRole({from: alice})).to.equal('Admin')
-      expect(await onlineMarket.getRole({from :bob})).to.equal('StoreOwner')
-      expect(await onlineMarket.getRole({from: user1})).to.equal('Shopper')
+      expect(await onlineMarket.getRole({from: bob})).to.equal('StoreOwner')
+      expect(await onlineMarket.getRole({from: shopper})).to.equal('Shopper')
     })
   })
 
@@ -144,11 +145,57 @@ contract('OnlineMarket', (accounts) => {
       expect(item[0].toString(10)).to.equal(itemId)
       expect(item[1]).to.equal('good shoes')
       expect(item[2].toString(10)).to.equal('1')
+      expect(item[3]).to.equal('ForSale')
 
       const result = await onlineMarket.getStore(bob)
       expect(result[0]).to.equal(bob)
       expect(result[1]).to.equal('')
       expect(result[2].toString(10)).to.equal('1')
+    })
+  })
+
+  describe('buyItem', () => {
+    let shopper;
+    let price;
+    let itemId;
+
+    beforeEach( async () => {
+      shopper = web3.eth.accounts[3]
+      price = web3.toWei(1, "ether")
+
+      await onlineMarket.addAdmin(alice)
+      await onlineMarket.addStoreOwner(bob, {from: alice})
+      await onlineMarket.addItem('good shoes', price, {from: bob})
+    })
+
+    it("purchases an item", async () => {
+      const shopperBalanceBefore = await web3.eth.getBalance(shopper).toNumber()
+      const storeOwnerBalanceBefore = await web3.eth.getBalance(bob).toNumber()
+
+      let storeOwner
+      let eventEmitted = false
+
+      const event = onlineMarket.ItemPurchased()
+      await event.watch((err, res) => {
+        storeOwner = res.args.storeOwner
+        itemId = res.args.id.toString(10)
+        eventEmitted = true
+      })
+
+      await onlineMarket.buyItem(bob, 0, {from: shopper, value: price})
+
+      expect(eventEmitted).to.equal(true)
+      const shopperBalanceAfter = await web3.eth.getBalance(shopper).toNumber()
+      const storeOwnerBalanceAfter = await web3.eth.getBalance(bob).toNumber()
+
+      expect(storeOwnerBalanceBefore + parseInt(price, 10)).to.equal(storeOwnerBalanceAfter);
+      expect(shopperBalanceBefore - price).to.above(shopperBalanceAfter);
+
+      const item = await onlineMarket.fetchItem(bob, itemId, {from: shopper})
+      expect(item[0].toString(10)).to.equal(itemId.toString())
+      expect(item[1]).to.equal('good shoes')
+      expect(item[2].toString(10)).to.equal(price)
+      expect(item[3]).to.equal('SoldByMe')
     })
   })
 })

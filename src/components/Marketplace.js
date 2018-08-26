@@ -10,6 +10,7 @@ export default class Marketplace extends Component {
     super(props, context);
 
     this.renderStore = this.renderStore.bind(this);
+    this.onClickBuy = this.onClickBuy.bind(this);
   }
 
   componentWillMount() {
@@ -17,9 +18,25 @@ export default class Marketplace extends Component {
     dispatch(storeOwnerActions.fetchAll(instance, account));
   }
 
+  componentDidMount() {
+    const { instance } = this.props;
+    const events = instance.allEvents();
+
+    // watch for changes
+    events.watch((error, result) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      this.watch(result);
+    });
+  }
+
   componentWillReceiveProps(nextProps) {
     const {
       instance,
+      account,
       storeOwners,
       stores,
       dispatch,
@@ -30,9 +47,34 @@ export default class Marketplace extends Component {
     }
 
     if (nextProps.stores.length !== stores.length) {
-      dispatch(storeActions.fetchStoreItems(instance, nextProps.stores));
+      dispatch(storeActions.fetchStoreItems(instance, account, nextProps.stores));
     }
   }
+
+  onClickBuy(store, item) {
+    const {
+      instance,
+      account,
+      dispatch,
+    } = this.props;
+
+    dispatch(storeActions.buyItem(instance, account, store, item));
+  }
+
+  watch(result) {
+    const {
+      instance,
+      account,
+      stores,
+      dispatch,
+    } = this.props;
+
+    const { event } = result;
+    if (event === 'ItemPurchased') {
+      dispatch(storeActions.fetchStoreItems(instance, account, stores));
+    }
+  }
+
 
   renderNoStoreOwners() {
     return (
@@ -48,6 +90,35 @@ export default class Marketplace extends Component {
     );
   }
 
+  renderState(store, item) {
+    if (item.state === 'SoldByMe') {
+      return (
+        <span className="text-muted">
+          Purchased
+        </span>
+      );
+    }
+
+    if (item.state === 'Sold') {
+      return (
+        <span className="text-muted">
+          Sold
+        </span>
+      );
+    }
+
+    return (
+      <input
+        type="submit"
+        onClick={() => (
+          this.onClickBuy(store, item)
+        )}
+        className="btn btn-secondary"
+        value="Buy"
+      />
+    );
+  }
+
   renderItem(store, item, index) {
     return (
       <li key={index} className="list-group-item d-flex justify-content-between lh-condensed">
@@ -58,8 +129,9 @@ export default class Marketplace extends Component {
         </div>
         <span className="text-muted">
           $
-          { item.price }
+          { item.price.toNumber() }
         </span>
+        { this.renderState(store, item) }
       </li>
     );
   }

@@ -12,6 +12,7 @@ const initialState = {
   title: '',
   itemCount: 0,
   items: [],
+  stores: [],
   storeOwners: [],
   storeItems: {},
 };
@@ -29,7 +30,12 @@ export default function storeReducer(state = initialState, action) {
 
     case FETCH_ITEMS_SUCCESS: {
       const items = _.map(action.items, item => (
-        { id: item[0], name: item[1], price: item[2].toNumber() }
+        {
+          id: item[0].toNumber(),
+          name: item[1],
+          price: item[2],
+          state: item[3],
+        }
       ));
       return Object.assign({}, state, { items });
     }

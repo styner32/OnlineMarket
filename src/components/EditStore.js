@@ -62,7 +62,6 @@ export default class EditStore extends Component {
       this.setState({ newTitle: '' });
     }
 
-    console.log('item count', nextProps.itemCount, itemCount);
     if (nextProps.itemCount !== itemCount) {
       dispatch(storeActions.fetchItems(instance, account, nextProps.itemCount));
     }
@@ -105,7 +104,7 @@ export default class EditStore extends Component {
           </h6>
         </div>
         <span className="text-muted">
-          { price }
+          { price.toNumber() }
         </span>
       </li>
     );
