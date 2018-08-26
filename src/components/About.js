@@ -4,7 +4,7 @@ import Header from './Header';
 class About extends Component {
   render() {
     return (
-      <div className="jumbotron">
+      <div>
         <Header />
         <h1>
           About page

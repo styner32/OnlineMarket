@@ -55,7 +55,7 @@ export default class StoreOwners extends Component {
     const { storeOwners } = this.props;
 
     return (
-      <div className="jumbotron">
+      <div>
         <h3>
           Store Owners
         </h3>
@@ -63,17 +63,21 @@ export default class StoreOwners extends Component {
           { _.map(storeOwners, this.renderStoreOwner) }
         </ul>
 
-        <div className="form">
-          <input
-            type="text"
-            onChange={this.onChangeNewStoreOwner}
-            value={newStoreOwner}
-          />
-          <input
-            type="submit"
-            onClick={this.onAdd}
-            value="Add"
-          />
+        <div className="form-inline">
+          <div className="input-group">
+            <input
+              type="text"
+              onChange={this.onChangeNewStoreOwner}
+              value={newStoreOwner}
+              className="form-control"
+            />
+            <input
+              type="submit"
+              onClick={this.onAdd}
+              className="btn btn-primary"
+              value="Add"
+            />
+          </div>
         </div>
       </div>
     );

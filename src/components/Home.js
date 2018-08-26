@@ -6,7 +6,7 @@ import StoreOwners from './StoreOwners';
 class Home extends Component {
   render() {
     return (
-      <div className="jumbotron">
+      <div>
         <Header />
         <h1>
           Online Market

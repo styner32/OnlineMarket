@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Header from '../components/Header';
 import StoreOwners from '../components/StoreOwners';
 import EditStore from '../components/EditStore';
+import Marketplace from '../components/Marketplace';
 import { login } from '../actions/userActions';
 import { initWeb3 } from '../actions/web3Actions';
 
@@ -25,18 +25,12 @@ class HomePage extends Component {
 
     return (
       <div className="jumbotron">
-        <Header />
         <h1>
           Online Market
         </h1>
         { role === 'Admin' ? (<StoreOwners {...this.props} />) : '' }
         { role === 'StoreOwner' ? (<EditStore {...this.props} />) : '' }
-        { role === 'Shopper'
-          ? (
-            <div>
-              Buy Items
-            </div>
-          ) : '' }
+        { role === 'Shopper' ? (<Marketplace {...this.props} />) : '' }
       </div>
     );
   }
@@ -51,6 +45,8 @@ function mapStateToProps(state) {
     title: state.stores.title,
     items: state.stores.items,
     itemCount: state.stores.itemCount,
+    stores: state.stores.stores,
+    storeItems: state.stores.storeItems,
   };
 }
 

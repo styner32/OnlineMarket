@@ -118,7 +118,7 @@ export default class EditStore extends Component {
     return (
       <div className="jumbotron">
         <h3>
-          Store Detail
+          Store Information
         </h3>
 
         <ul className="list-group mb-3">
@@ -132,14 +132,9 @@ export default class EditStore extends Component {
               { title }
             </span>
           </li>
-          {_.map(items, this.renderItem)}
         </ul>
 
         <div className="col-md-8 order-md-1">
-          <h4 className="mb-3">
-            Edit Store
-          </h4>
-
           <div className="form-inline">
             <div className="form-group mb-2">
               <label htmlFor="storeTitle">
@@ -153,14 +148,24 @@ export default class EditStore extends Component {
                 className="form-control"
               />
             </div>
+            <input
+              type="submit"
+              onClick={this.onClickUpdate}
+              className="btn btn-primary mb-2"
+              value="Update"
+            />
           </div>
-          <input
-            type="submit"
-            onClick={this.onClickUpdate}
-            className="btn btn-primary mb-2"
-            value="Update"
-          />
         </div>
+
+        <hr />
+
+        <h3>
+          Store Items
+        </h3>
+
+        <ul className="list-group mb-3">
+          {_.map(items, this.renderItem)}
+        </ul>
 
         <div className="row">
           <div className="col-md-6 mb-3">
