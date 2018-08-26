@@ -74,8 +74,8 @@ contract OnlineMarket {
         stores[msg.sender].title = title;
     }
 
-    function getStoreTitle() public view returns (string, uint) {
-        return (stores[msg.sender].title, stores[msg.sender].itemCount);
+    function getStore(address addr) public view returns (address, string, uint) {
+        return (addr, stores[addr].title, stores[addr].itemCount);
     }
 
     function addItem(string name, uint price) public shouldBeStoreOwner {
@@ -88,9 +88,9 @@ contract OnlineMarket {
         stores[msg.sender].itemCount++;
     }
 
-    function fetchItem(uint id) public shouldBeStoreOwner view returns(uint, string, uint) {
-        return (stores[msg.sender].items[id].id,
-                stores[msg.sender].items[id].name,
-                stores[msg.sender].items[id].price);
+    function fetchItem(address addr, uint id) public view returns(uint, string, uint) {
+        return (stores[addr].items[id].id,
+                stores[addr].items[id].name,
+                stores[addr].items[id].price);
     }
 }
