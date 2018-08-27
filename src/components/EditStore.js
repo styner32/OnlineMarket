@@ -104,7 +104,8 @@ export default class EditStore extends Component {
           </h6>
         </div>
         <span className="text-muted">
-          { price.toNumber() }
+          { `${web3.utils.fromWei(price.toString(), 'ether')} ` }
+          Ether
         </span>
       </li>
     );

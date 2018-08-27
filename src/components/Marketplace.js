@@ -128,8 +128,8 @@ export default class Marketplace extends Component {
           </h6>
         </div>
         <span className="text-muted">
-          $
-          { item.price.toNumber() }
+          { `${web3.utils.fromWei(item.price.toString(), 'ether')} ` }
+          Ether
         </span>
         { this.renderState(store, item) }
       </li>
