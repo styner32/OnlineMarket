@@ -1,6 +1,5 @@
 import Web3 from 'web3';
 import contract from 'truffle-contract';
-import CreditContract from '../../build/contracts/Credit.json';
 import OnlineMarketContract from '../../build/contracts/OnlineMarket.json';
 
 class Web3Manager {
@@ -34,32 +33,6 @@ class Web3Manager {
 
     return new Promise((resolve) => {
       resolve({ web3: this.web3 });
-    });
-  }
-
-  creditInstance() {
-    return new Promise((resolve) => {
-      this.get().then((results) => {
-        const { web3 } = results;
-        const credit = contract(CreditContract);
-        credit.setProvider(web3.currentProvider);
-
-        web3.eth.getAccounts((error, accounts) => {
-          if (error) {
-            console.log(error);
-          }
-
-          const account = accounts[0];
-          console.log(`account ${account} will be used`);
-
-          credit.deployed().then((instance) => {
-            resolve({
-              instance,
-              account,
-            });
-          });
-        });
-      });
     });
   }
 
